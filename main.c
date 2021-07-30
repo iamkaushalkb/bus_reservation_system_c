@@ -34,17 +34,31 @@ int authentication_menu(); // Authentication Menu Function
 void createaccount();      // Account Registration Function
 void login();              // Login Function
 int dashboard();           // Dashboard Function
+void booking();            // Booking Function
+void booking_status();     // Booking Status Function
+int admin_dashboard();     // Dashboard Function
 void gotoxy(int, int);     // Gotoxy function
 FILE *fp;
 struct user u, U;
 int choice;
 char fname[20], lname[20], uname[20], pss[20], C;
+struct admin
+{
+    char pass[20];
+    char username[20];
+};
 struct user
 {
     char pass[20];
     char username[20];
     char fname[20];
     char lname[20];
+};
+struct booking
+{
+    char name[20];
+    char bookingDate[20];
+    char seatNumber[20];
 };
 int main()
 {
@@ -155,8 +169,9 @@ void createaccount()
 void login()
 {
     char uname[20], pss[20];
-    FILE *fp;
+    FILE *fp2;
     struct user u;
+    struct admin authDetails = {"admin", "admin"};
     system("cls");
     gotoxy(53, 3);
     printf("<--<<LOGIN TO YOUR ACCOUNT>>->\n\n");
@@ -179,7 +194,6 @@ void login()
         {
             printf(" \n Username And Password is Correct.\n");
             printf(" Press any key to continue...");
-            getch();
             gotoxy(57, 12);
             system("cls"); // Clearing Previous Section
             printf(" Welcome %s %s \n", u.fname, u.lname);
@@ -190,20 +204,25 @@ void login()
                 {
                 case 1:
                     system("cls"); // Clearing Previous Section
-                    printf("\nBooking Under Construction\n"); 
+                    booking();     // Calling booking function
                     break;
 
                 case 2:
-                    system("cls"); // Clearing Previous Section
-                    printf("\nBoooking Status Under Construction2\n"); 
+                    system("cls");    // Clearing Previous Section
+                    booking_status(); // Calling booking status function
                     break;
 
                 case 3:
                     system("cls"); // Clearing Previous Section
-                    printf("\nDelete Booking Under Construction3\n"); 
+                    printf("\nBus List Under Construction3\n");
                     break;
 
                 case 4:
+                    system("cls"); // Clearing Previous Section
+                    printf("\nDelete Booking Under Construction3\n");
+                    break;
+
+                case 5:
                     exit(0); // If user selected option is 4 => exit the authentication menu
                 default:
                     printf("\nInvalid Choice! \n");
@@ -219,6 +238,40 @@ void login()
             getch();
         }
     }
+    // For Admin
+    if (strcmp(uname, authDetails.username) == 0 && strcmp(pss, authDetails.pass) == 0) // if authentication succed
+    {
+        gotoxy(57, 12);
+        system("cls"); // Clearing Previous Section
+        printf(" Welcome Admin \n");
+        // For Admin Dashboard Menu
+        while (1) // While Loop with condition 1 that means always true
+        {
+            switch (admin_dashboard()) // Using Switch Case for Dashboard Menu
+            {
+            case 1:
+                system("cls"); // Clearing Previous Section
+                printf("Test1");
+                break;
+
+            case 2:
+                system("cls");    // Clearing Previous Section
+                printf("Test2");
+                break;
+
+            case 3:
+                system("cls"); // Clearing Previous Section
+                printf("Test3");
+                break;
+            case 4:
+                exit(0); // If user selected option is 4 => exit the authentication menu
+            default:
+                printf("\nInvalid Choice! \n");
+                break;
+            }
+        } // Calling admin dashboard function which will redirect to admin dashboard
+        getch();
+    }
     fclose(fp);
     system("cls");
 }
@@ -228,11 +281,86 @@ int dashboard()
     // List of Choices
     printf("\n[1] BOOK BUS:  \n");
     printf("[2] VIEW BOOKING STATUS:  \n");
-    printf("[3] DELETE BOOKING:  \n");
-    printf("[4] Exit:  \n");
+    printf("[3] VIEW BUS LIST:  \n");
+    printf("[4] DELETE BOOKING:  \n");
+    printf("[5] Exit:  \n");
     printf("Enter your choice :  "); // Asking For User Choices
     scanf("%d", &dashboard_choice);  // Accepting Choice as dashboard_choice variable
     return dashboard_choice;
+}
+int admin_dashboard()
+{
+    int admin_dashboard_choice; // Choice variable as dashboard_choice
+    // List of Choices
+    printf("\n[1] Add BUS:  \n");
+    printf("[2] VIEW All BOOKINGS:  \n");
+    printf("[3] DELETE BOOKINGs:  \n");
+    printf("[4] Exit:  \n");
+    printf("Enter your choice :  ");      // Asking For User Choices
+    scanf("%d", &admin_dashboard_choice); // Accepting Choice as dashboard_choice variable
+    return admin_dashboard_choice;
+}
+void booking()
+{
+    struct booking bookSeat;
+    FILE *fp;
+    system("cls");
+    gotoxy(57, 3);
+    puts("<--<<Book Seat>>-->");
+    printf("\n\n");
+    printf("    Enter your name: ");
+    fflush(stdin);
+    gets(bookSeat.name);
+    printf("\n");
+    printf("    Date of Booking: ");
+    scanf("%s", bookSeat.bookingDate);
+    printf("\n");
+    printf("    Seat Number: ");
+    scanf("%s", bookSeat.seatNumber);
+    // Reading from file
+    // Set File Path according to your folder destination of your project files
+    fp = fopen("D:\\Bus Reservation System\\Files\\booking_details.txt", "wb+");
+    if (fp == NULL)
+    {
+        printf("\nError opened file\n");
+        exit(1);
+    }
+    fwrite(&U, sizeof(struct booking), 1, fp);
+    fclose(fp);
+    system("cls");
+    gotoxy(55, 20);
+    printf(" Seat Booked Successfully.");
+    gotoxy(75, 25);
+    printf("Press any key to continue...");
+    getch();
+    system("cls");
+}
+void booking_status()
+{
+    FILE *fp;
+    struct booking bookStatus;
+    system("cls");
+    gotoxy(52, 3);
+    printf("    Your Details Are..\n\n");
+    // Reading from file
+    // Set File Path according to your folder destination of your project files
+    fp = fopen("D:\\Bus Reservation System\\Files\\booking_details.txt", "rb+");
+    if (fp == NULL) // Checking Existence of file
+    {
+        printf("\"File not found\"");
+        return 1;
+    }
+    while (fread(&u, sizeof(struct user), 1, fp)) // Reading data form file
+    {
+        printf("\n    Name: %s %s \n", bookStatus.name);
+        printf("\n    Name: %s %s \n", bookStatus.bookingDate);
+        printf("\n    Name: %s %s \n", bookStatus.seatNumber);
+    }
+    fclose(fp);
+    gotoxy(75, 16);
+    printf("Press any key to continue...");
+    getch();
+    system("cls");
 }
 void gotoxy(int x, int y)
 {
