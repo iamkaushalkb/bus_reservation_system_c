@@ -24,7 +24,7 @@ Simply you can run this because no complex backend is added.
    ```sh
    git clone https://github.com/iamkaushalkb/BEI_CPROGRAMMING.git
    ```
-2. Install Preferable C comiler
+2. Install GCC C comiler
 
 3. Run Code
    ```sh
